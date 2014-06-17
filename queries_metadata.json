@@ -1,7 +1,5 @@
 {
-    "byISBN"
-:
-    [
+    "byISBN": [
         {
             "source": "dbpedia",
             "byProcessing": "function(){return ISBN.parse(by[0]).asIsbn10(true);}",
@@ -67,9 +65,7 @@
             "outputProcessing": "function(){for(var i=0;i<$output.length;i++){if($output[i].language.length == 2){return [$output[i]]}} return [$output[0]]}"
         }
     ],
-        "byAuthor"
-:
-    [
+    "byAuthor": [
         {
             "source": "dbpedia",
             "byProcessing": "function(){return by}",
@@ -87,9 +83,7 @@
             "outputProcessing": "function(){var result = [];var selected = {};for(var i=0;i<$output.length;i++){if(selected[$output[i].isbn] === undefined){result.push($output[i]);selected[$output[i].isbn] = true;}}return $output}"
         }
     ],
-        "byGenre"
-:
-    [
+    "byGenre": [
         {
             "source": "dbpedia",
             "byProcessing": "function(){return by}",
@@ -107,9 +101,7 @@
             "outputProcessing": "function(){var result = [];var selected = {};for(var i=0;i<$output.length;i++){if(selected[$output[i].isbn] === undefined){result.push($output[i]);selected[$output[i].isbn] = true;}}return $output}"
         }
     ],
-        "seriesNext"
-:
-    [
+    "seriesNext": [
         {
             "source": "dbpedia",
             "byProcessing": "function(){return by}",
