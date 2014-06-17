@@ -55,6 +55,8 @@ public abstract class QueryEngine {
     ArrayList<String> processBy(String byProcessStr, ArrayList<String> by) throws IOException, ScriptException {
         String byStr = mapper.writeValueAsString(by);
         engine = engFactory.getEngineByName("JavaScript");
+        engine.eval(new java.io.FileReader("isbn-groups.js"));
+        engine.eval(new java.io.FileReader("isbn.js"));
         engine.eval("var by="+byStr+";"+"var $byProcessing="+byProcessStr+";$result=$byProcessing()");
         return (ArrayList<String>) mapper.readValue(mapper.writeValueAsString(engine.get("$result")), new TypeReference<ArrayList<String>>() {
         });

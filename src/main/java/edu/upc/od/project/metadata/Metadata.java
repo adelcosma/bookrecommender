@@ -4,6 +4,7 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,7 +65,7 @@ public class Metadata {
 
     }
     public HashMap<String, ArrayList< QueryMD>> getQueriesMD() throws IOException {
-        return mapper.readValue(QUERIES_MD_JSON, new TypeReference<HashMap<String, ArrayList< QueryMD>>>(){});
+        return mapper.readValue(new File("queries_metadata.json"), new TypeReference<HashMap<String, ArrayList< QueryMD>>>(){});
     }
     public HashMap<String, SourceMD> getSourcesMD() throws IOException {
         return mapper.readValue(SOURCES_MD_JSON, new TypeReference<HashMap<String, SourceMD>>(){});
