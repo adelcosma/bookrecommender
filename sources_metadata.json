@@ -1,0 +1,10 @@
+{
+       "dbpedia": {
+             "endpoint": "http://dbpedia.org/sparql",
+             "iface": "edu.upc.od.project.QuerySparql"
+       },
+       "mongodb": {
+             "endpoint": "",
+             "iface": "edu.upc.od.project.QueryMongoDB"
+       }
+}

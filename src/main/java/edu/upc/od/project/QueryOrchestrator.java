@@ -18,7 +18,7 @@ public class QueryOrchestrator
     public static void main( String[] args ) throws IOException, ScriptException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         Integration in = new Integration();
         ArrayList<String> by = new ArrayList<String>();
-        by.add("0-553-10803-4");
-        System.out.println(in.performQuery("byISBN", by).toString());
+        by.add("Science fiction");
+        System.out.println(in.performQuery("byGenre", by).toString());
     }
 }

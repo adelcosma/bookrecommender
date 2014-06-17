@@ -1,0 +1,13 @@
+{
+    "index": "isbn",
+    "byIndexQuery": "byISBN",
+    "mapping": {
+        "title": "function(){return $query.dbpedia.title}",
+        "isbn": "function(){return $query.dbpedia.isbn}",
+        "synopsis": "function(){return $query.dbpedia.synopsis}",
+        "language": "function(){return $query.dbpedia.language}",
+        "genre": "function(){return $query.dbpedia.genre}",
+        "country": "function(){return $query.dbpedia.country}",
+        "author": "function(){return $query.dbpedia.author}"
+    }
+}
