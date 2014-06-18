@@ -8,7 +8,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  * Created by alvaro on 14/05/14.
  */
 public class QueryMongoDB extends QueryEngine {
-    protected ArrayList<HashMap<String, String>> doQuery(String queryStr, String endpoint){
+    protected ArrayList<Map<String, String>> doQuery(String queryStr, String endpoint){
         try {
             String[] conn = endpoint.split("//");
             MongoClient mongoClient = new MongoClient();

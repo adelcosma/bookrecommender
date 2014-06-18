@@ -3,6 +3,7 @@ package edu.upc.od.project;
 import com.hp.hpl.jena.query.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Iterator;
 
 /**
@@ -11,17 +12,17 @@ import java.util.Iterator;
 public class QuerySparql extends QueryEngine{
 
 
-    protected ArrayList<HashMap<String, String>> doQuery(String queryStr, String endpoint){
+    protected ArrayList<Map<String, String>> doQuery(String queryStr, String endpoint){
         Query query = QueryFactory.create(queryStr);
         QueryExecution qexec = QueryExecutionFactory.sparqlService(endpoint, query);
 
-        ArrayList<HashMap<String, String>> books = new ArrayList<HashMap<String, String>>();
+        ArrayList<Map<String, String>> books = new ArrayList<Map<String, String>>();
 
         ResultSet results = qexec.execSelect();
 
 
         while( results.hasNext() ){
-            HashMap<String, String> book = new HashMap<String, String>();
+            Map<String, String> book = new HashMap<String, String>();
 
             QuerySolution qs = results.next();
             Iterator<String> varNames = qs.varNames();
