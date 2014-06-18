@@ -81,6 +81,28 @@
             },
             "query": "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dbpprop: <http://dbpedia.org/property/>\nPREFIX ontology: <http://dbpedia.org/ontology/>\nselect ?s_isbn ?s_title ?s_synopsis ?s_language ?s_genre ?s_country ?s_author\nwhere {\n?book rdf:type ontology:Book.\n?book dbpprop:isbn ?s_isbn. FILTER( langMatches( lang( ?s_isbn ), \"en\" ) ).\n?book dbpprop:genre ?_genre. OPTIONAL{?_genre rdfs:label ?s_genre. FILTER( langMatches( lang( ?s_genre ), \"en\" ) )}.\n?book dbpprop:name ?s_title. FILTER( langMatches( lang( ?s_title ), \"en\" ) ).\nOPTIONAL{?book ontology:abstract ?s_synopsis. FILTER( langMatches( lang( ?s_synopsis ), \"en\" ) )}.\n?book dbpprop:language ?_language. OPTIONAL{?_language  dbpprop:iso ?s_language. FILTER( langMatches( lang( ?s_language ), \"en\" ) )}.\n?book dbpprop:country ?_country. OPTIONAL{?_country dbpprop:countryCode ?s_country. FILTER( langMatches( lang( ?s_country ), \"en\" ) )}.\n?book dbpprop:author ?_author. ?_author dbpprop:name ?s_author. FILTER regex( ?s_author, \"{{BY0}}\", \"i\"). FILTER( langMatches( lang( ?s_author ), \"en\" ) ).\n}LIMIT 200",
             "outputProcessing": "function(){var result = [];var selected = {};for(var i=0;i<$output.length;i++){if(selected[$output[i].isbn] === undefined){result.push($output[i]);selected[$output[i].isbn] = true;}}return result}"
+        },
+        {
+            "source": "mongodb",
+            "output": ["subtitle"],
+            "mapping": {
+                "subtitle": "function(){return subtitle}"
+            },
+            "byProcessing": "function(){return [ISBN.parse(by[0]).asIsbn10()];}",
+            "query": "{\"authors\" : [ { \"key\" : {{BY0}} }]}",
+            "outputProcessing": "function(){for(var i=0;i<$output.length;i++){if($output[i].language.length == 2){return [$output[i]]}} return [$output[0]]}"
+        }
+    ],
+    "byAuthor2": [
+        {
+            "source": "mongodb",
+            "output": ["subtitle"],
+            "mapping": {
+                "subtitle": "function(){return subtitle}"
+            },
+            "byProcessing": "function(){return by}",
+            "query": "{\"authors\" : [ { \"key\" : \"{{BY0}}\" }]}",
+            "outputProcessing": "function(){for(var i=0;i<$output.length;i++){if($output[i].language.length == 2){return [$output[i]]}} return [$output[0]]}"
         }
     ],
     "byGenre": [

@@ -4,7 +4,7 @@
              "iface": "edu.upc.od.project.QuerySparql"
        },
        "mongodb": {
-             "endpoint": "",
+             "endpoint": "od//book_collection",
              "iface": "edu.upc.od.project.QueryMongoDB"
        }
 }

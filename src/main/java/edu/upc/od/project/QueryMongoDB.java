@@ -17,6 +17,7 @@ import java.util.logging.Logger;
  */
 public class QueryMongoDB extends QueryEngine {
     protected ArrayList<Map<String, String>> doQuery(String queryStr, String endpoint){
+        ArrayList<Map<String, String>> result = new ArrayList<Map<String, String>>();
         try {
             String[] conn = endpoint.split("//");
             MongoClient mongoClient = new MongoClient();
@@ -26,13 +27,13 @@ public class QueryMongoDB extends QueryEngine {
 
             DBCursor cursor = coll.find(query);
             while (cursor.hasNext()) {
-                System.out.println(cursor.next().toMap().toString());
+                result.add(cursor.next().toMap());
                 
             }
         } catch (UnknownHostException ex) {
             Logger.getLogger(QueryMongoDB.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+        return result;
     }
     
    /* test
