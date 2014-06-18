@@ -35,17 +35,17 @@ public class Integration {
         this.integrationMD = md.getIntegrationMD();
     }
 
-    public ArrayList<Map<String, String>> performQuery(String queryId, ArrayList<String> by) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException, ScriptException {
+    public ArrayList<HashMap<String, String>> performQuery(String queryId, ArrayList<String> by) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException, ScriptException {
 
         ArrayList<QueryMD> query = queriesMD.get(queryId);
 
         // index_value -> source -> book
-        Map<String, Map<String, Map<String, String>>> indexedPartialResults = new HashMap<String, Map<String, Map<String,String>>>();
+        HashMap<String, HashMap<String, HashMap<String, String>>> indexedPartialResults = new HashMap<String, HashMap<String, HashMap<String,String>>>();
 
         for(QueryMD sourceQuery: query){
             SourceMD source = sourcesMD.get(sourceQuery.getSource());
             QueryEngine qe = (QueryEngine) Class.forName(source.getIface()).newInstance();
-            for(Map<String, String> partialResult: qe.performQuery(sourceQuery, source, by)){
+            for(HashMap<String, String> partialResult: qe.performQuery(sourceQuery, source, by)){
                 String indexKey = integrationMD.getIndex();
                 if(partialResult == null) {
                     break;
@@ -56,7 +56,7 @@ public class Integration {
                 }
 
                 if(indexedPartialResults.get(indexValue) == null){
-                    indexedPartialResults.put(indexValue, new HashMap<String, Map<String, String>>());
+                    indexedPartialResults.put(indexValue, new HashMap<String, HashMap<String, String>>());
                 }
 
                 indexedPartialResults.get(indexValue).put(sourceQuery.getSource(), partialResult);
@@ -66,11 +66,11 @@ public class Integration {
         return integrate(indexedPartialResults);
     }
 
-    public ArrayList<Map<String, String>> integrate(Map<String, Map<String,Map<String, String>>> partialResults) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException, ScriptException {
-        ArrayList<Map<String, String>> integratedBooks = new ArrayList<Map<String, String>>();
+    public ArrayList<HashMap<String, String>> integrate(HashMap<String, HashMap<String,HashMap<String, String>>> partialResults) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException, ScriptException {
+        ArrayList<HashMap<String, String>> integratedBooks = new ArrayList<HashMap<String, String>>();
 
-        for(Map.Entry<String, Map<String, Map<String, String>>> pResultEntry: partialResults.entrySet()){
-            Map<String, Map<String, String>> results = pResultEntry.getValue();
+        for(Map.Entry<String, HashMap<String, HashMap<String, String>>> pResultEntry: partialResults.entrySet()){
+            HashMap<String, HashMap<String, String>> results = pResultEntry.getValue();
             for(Map.Entry<String, SourceMD> sourceEntry: sourcesMD.entrySet()){
                 if(results.get(sourceEntry.getKey()) == null){
                     // Get book byISBN from the source
@@ -79,7 +79,7 @@ public class Integration {
                         if(query.getSource() == sourceEntry.getKey()){
                             ArrayList<String> by = new ArrayList<String>();
                             by.add(pResultEntry.getKey());
-                            ArrayList<Map<String, String>> byISBNResults = qe.performQuery(query, sourceEntry.getValue(), by);
+                            ArrayList<HashMap<String, String>> byISBNResults = qe.performQuery(query, sourceEntry.getValue(), by);
                             if(byISBNResults != null){
                                 results.put(sourceEntry.getKey(), byISBNResults.get(0));
                             }

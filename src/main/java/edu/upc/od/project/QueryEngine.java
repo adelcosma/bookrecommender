@@ -30,11 +30,11 @@ public abstract class QueryEngine {
     }
 
 
-    protected abstract ArrayList<Map<String, String>> doQuery(String queryStr, String endpoint);
+    protected abstract ArrayList<HashMap<String, String>> doQuery(String queryStr, String endpoint);
 
-    public ArrayList<Map<String, String>> performQuery(QueryMD query, SourceMD sourceMD, ArrayList<String> by) throws IOException {
+    public ArrayList<HashMap<String, String>> performQuery(QueryMD query, SourceMD sourceMD, ArrayList<String> by) throws IOException {
 
-        ArrayList<Map<String, String>> result;
+        ArrayList<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
         ArrayList<String> byProc = new ArrayList<String>();
         try {
             byProc = processBy(query.getByProcessing(), by);
@@ -62,10 +62,10 @@ public abstract class QueryEngine {
         });
     }
 
-    private ArrayList<Map<String, String>> resultsProcess(ArrayList<Map<String, String>> books, ArrayList<String> outputs, HashMap<String, String> mapping, String outputProcess) throws ScriptException, IOException {
-        ArrayList<Map<String, String>> results = new ArrayList<Map<String, String>>();
+    private ArrayList<HashMap<String, String>> resultsProcess(ArrayList<HashMap<String, String>> books, ArrayList<String> outputs, HashMap<String, String> mapping, String outputProcess) throws ScriptException, IOException {
+        ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
 
-        for(Map<String, String> book: books){
+        for(HashMap<String, String> book: books){
             HashMap<String,String> result = new HashMap<String, String>();
             String vars = "";
             for(String output: outputs){
