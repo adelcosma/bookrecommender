@@ -12,17 +12,16 @@ import java.util.Iterator;
 public class QuerySparql extends QueryEngine{
 
 
-    protected ArrayList<Map<String, String>> doQuery(String queryStr, String endpoint){
+    protected ArrayList<Map<String, Object>> doQuery(String queryStr, String endpoint){
         Query query = QueryFactory.create(queryStr);
         QueryExecution qexec = QueryExecutionFactory.sparqlService(endpoint, query);
 
-        ArrayList<Map<String, String>> books = new ArrayList<Map<String, String>>();
+        ArrayList<Map<String, Object>> books = new ArrayList<Map<String, Object>>();
 
         ResultSet results = qexec.execSelect();
 
-
         while( results.hasNext() ){
-            Map<String, String> book = new HashMap<String, String>();
+            Map<String, Object> book = new HashMap<String, Object>();
 
             QuerySolution qs = results.next();
             Iterator<String> varNames = qs.varNames();
