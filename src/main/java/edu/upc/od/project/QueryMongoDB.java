@@ -16,8 +16,8 @@ import java.util.logging.Logger;
  * Created by alvaro on 14/05/14.
  */
 public class QueryMongoDB extends QueryEngine {
-    protected ArrayList<Map<String, String>> doQuery(String queryStr, String endpoint){
-        ArrayList<Map<String, String>> result = new ArrayList<Map<String, String>>();
+    protected ArrayList<Map<String, Object>> doQuery(String queryStr, String endpoint){
+        ArrayList<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
         try {
             String[] conn = endpoint.split("//");
             MongoClient mongoClient = new MongoClient();

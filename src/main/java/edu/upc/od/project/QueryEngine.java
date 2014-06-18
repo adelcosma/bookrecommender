@@ -3,7 +3,6 @@ package edu.upc.od.project;
 import edu.upc.od.project.metadata.QueryMD;
 import edu.upc.od.project.metadata.SourceMD;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
@@ -11,7 +10,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,11 +28,11 @@ public abstract class QueryEngine {
     }
 
 
-    protected abstract ArrayList<HashMap<String, String>> doQuery(String queryStr, String endpoint);
+    protected abstract ArrayList<Map<String, Object>> doQuery(String queryStr, String endpoint);
 
-    public ArrayList<HashMap<String, String>> performQuery(QueryMD query, SourceMD sourceMD, ArrayList<String> by) throws IOException {
+    public ArrayList<Map<String, String>> performQuery(QueryMD query, SourceMD sourceMD, ArrayList<String> by) throws IOException {
 
-        ArrayList<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
+        ArrayList<Map<String, String>> result = new ArrayList<Map<String, String>>();
         ArrayList<String> byProc = new ArrayList<String>();
         try {
             byProc = processBy(query.getByProcessing(), by);
@@ -43,9 +41,9 @@ public abstract class QueryEngine {
         }
 
         String queryStr = generateQuery(query, byProc);
-        result = doQuery(queryStr, sourceMD.getEndpoint());
+        ArrayList<Map<String, Object>> partialResult = doQuery(queryStr, sourceMD.getEndpoint());
         try {
-            result = resultsProcess(result, query.getOutput(), query.getMapping(), query.getOutputProcessing());
+            result = resultsProcess(partialResult, query.getOutput(), query.getMapping(), query.getOutputProcessing());
         } catch (ScriptException e) {
             e.printStackTrace();
         }
@@ -62,14 +60,16 @@ public abstract class QueryEngine {
         });
     }
 
-    private ArrayList<HashMap<String, String>> resultsProcess(ArrayList<HashMap<String, String>> books, ArrayList<String> outputs, HashMap<String, String> mapping, String outputProcess) throws ScriptException, IOException {
-        ArrayList<HashMap<String, String>> results = new ArrayList<HashMap<String, String>>();
+    private ArrayList<Map<String, String>> resultsProcess(ArrayList<Map<String, Object>> books, ArrayList<String> outputs, Map<String, String> mapping, String outputProcess) throws ScriptException, IOException {
+        ArrayList<Map<String, String>> results = new ArrayList<Map<String, String>>();
 
-        for(HashMap<String, String> book: books){
-            HashMap<String,String> result = new HashMap<String, String>();
+        for(Map<String, Object> book: books){
+            Map<String,String> result = new HashMap<String, String>();
             String vars = "";
             for(String output: outputs){
-                vars += "var "+output+"=\""+ StringEscapeUtils.escapeJavaScript(book.get(output))+"\";";
+                String outputValue = mapper.writeValueAsString(book.get(output));
+                //StringEscapeUtils.escapeJavaScript(book.get(output));
+                vars += "var "+output+"="+ outputValue+";";
             }
             for(Map.Entry<String, String> merge : mapping.entrySet()){
                 engine = engFactory.getEngineByName("JavaScript");
@@ -86,7 +86,7 @@ public abstract class QueryEngine {
         engine = engFactory.getEngineByName("JavaScript");
         String js = "var $output="+resultsStr+";var $outputProcessing="+outputProcess+";$result=$outputProcessing()";
         engine.eval(js);
-        results = mapper.readValue(mapper.writeValueAsString(engine.get("$result")), new TypeReference<ArrayList<HashMap<String, String>>>() {});
+        results = mapper.readValue(mapper.writeValueAsString(engine.get("$result")), new TypeReference<ArrayList<Map<String, String>>>() {});
 
         return results;
     }
