@@ -20,7 +20,6 @@ public class QuerySparql extends QueryEngine{
 
         ResultSet results = qexec.execSelect();
 
-
         while( results.hasNext() ){
             Map<String, Object> book = new HashMap<String, Object>();
 
