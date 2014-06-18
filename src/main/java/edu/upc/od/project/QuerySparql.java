@@ -18,6 +18,7 @@ public class QuerySparql extends QueryEngine{
 
         ArrayList<Map<String, Object>> books = new ArrayList<Map<String, Object>>();
 
+
         ResultSet results = qexec.execSelect();
 
         while( results.hasNext() ){
