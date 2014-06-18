@@ -51,7 +51,7 @@
         {
             "source": "dbpedia",
             "byProcessing": "function(){return [ISBN.parse(by[0]).asIsbn10()];}",
-            "output": [ "s_isbn", "s_title", "s_synopsis", "s_language", "s_getrue", "s_country", "s_author" ],
+            "output": [ "s_isbn", "s_title", "s_synopsis", "s_language", "s_genre", "s_country", "s_author" ],
             "mapping": {
                 "isbn": "function(){var isbnparser;if(s_isbn === null || s_isbn === undefined){return null;}var partial = s_isbn.split(',')[0].split(' ');if(partial[1] === undefined){isbnparser = ISBN.parse(partial[0]);if(isbnparser === null){return null;}return isbnparser.asIsbn10();}isbnparser = ISBN.parse(partial[1]);if(isbnparser === null){return null;}return isbnparser.asIsbn10();}",
                 "title": "function(){return s_title}",
