@@ -28,7 +28,7 @@ public abstract class QueryEngine {
     }
 
 
-    protected abstract ArrayList<Map<String, String>> doQuery(String queryStr, String endpoint);
+    protected abstract ArrayList<Map<String, Object>> doQuery(String queryStr, String endpoint);
 
     public ArrayList<Map<String, String>> performQuery(QueryMD query, SourceMD sourceMD, ArrayList<String> by) throws IOException {
 
@@ -41,9 +41,9 @@ public abstract class QueryEngine {
         }
 
         String queryStr = generateQuery(query, byProc);
-        result = doQuery(queryStr, sourceMD.getEndpoint());
+        ArrayList<Map<String, Object>> partialResult = doQuery(queryStr, sourceMD.getEndpoint());
         try {
-            result = resultsProcess(result, query.getOutput(), query.getMapping(), query.getOutputProcessing());
+            result = resultsProcess(partialResult, query.getOutput(), query.getMapping(), query.getOutputProcessing());
         } catch (ScriptException e) {
             e.printStackTrace();
         }
@@ -60,14 +60,16 @@ public abstract class QueryEngine {
         });
     }
 
-    private ArrayList<Map<String, String>> resultsProcess(ArrayList<Map<String, String>> books, ArrayList<String> outputs, Map<String, String> mapping, String outputProcess) throws ScriptException, IOException {
+    private ArrayList<Map<String, String>> resultsProcess(ArrayList<Map<String, Object>> books, ArrayList<String> outputs, Map<String, String> mapping, String outputProcess) throws ScriptException, IOException {
         ArrayList<Map<String, String>> results = new ArrayList<Map<String, String>>();
 
-        for(Map<String, String> book: books){
+        for(Map<String, Object> book: books){
             Map<String,String> result = new HashMap<String, String>();
             String vars = "";
             for(String output: outputs){
-                vars += "var "+output+"=\""+ StringEscapeUtils.escapeJavaScript(book.get(output))+"\";";
+                String outputValue = mapper.writeValueAsString(book.get(output));
+                //StringEscapeUtils.escapeJavaScript(book.get(output));
+                vars += "var "+output+"="+ outputValue+";";
             }
             for(Map.Entry<String, String> merge : mapping.entrySet()){
                 engine = engFactory.getEngineByName("JavaScript");
