@@ -63,6 +63,24 @@
             },
             "query": "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dbpprop: <http://dbpedia.org/property/>\nPREFIX ontology: <http://dbpedia.org/ontology/>\nselect ?s_isbn ?s_title ?s_synopsis ?s_language ?s_genre ?s_country ?s_author\nwhere {\n?book rdf:type ontology:Book.\n?book dbpprop:isbn ?s_isbn. FILTER regex(?s_isbn, \"{{BY0}}\"). FILTER( langMatches( lang( ?s_isbn ), \"en\" ) ).\n?book dbpprop:genre ?_genre. OPTIONAL{?_genre rdfs:label ?s_genre. FILTER( langMatches( lang( ?s_genre ), \"en\" ) )}.\nOPTIONAL{?book dbpprop:name ?s_title. FILTER( langMatches( lang( ?s_title ), \"en\" ) )}.\nOPTIONAL{?book ontology:abstract ?s_synopsis. FILTER( langMatches( lang( ?s_synopsis ), \"en\" ) )}.\n?book dbpprop:language ?_language. OPTIONAL{?_language  dbpprop:iso ?s_language. FILTER( langMatches( lang( ?s_language ), \"en\" ) )}.\n?book dbpprop:country ?_country. OPTIONAL{?_country dbpprop:countryCode ?s_country. FILTER( langMatches( lang( ?s_country ), \"en\" ) )}.\n?book dbpprop:author ?_author. OPTIONAL{?_author dbpprop:name ?s_author. FILTER( langMatches( lang( ?s_author ), \"en\" ) )}.\n}LIMIT 200",
             "outputProcessing": "function(){for(var i=0;i<$output.length;i++){if($output[i].language.length == 2){return [$output[i]]}} return [$output[0]]}"
+        },
+        {
+            "source": "mongodb",
+            "output": ["isbn_10","title","publishers","subtitle","number_of_pages","languages","publish_date","authors","physical_dimensions"],
+            "mapping": {
+                "isbn": "function(){return isbn_10[0]}",
+                "title": "function(){return title}",
+                "publishers": "function(){return publishers[0]}",
+                "synopsis": "function(){return subtitle}",
+                "pages": "function(){return number_of_pages}",
+                "language": "function(){return languages[0]}",
+                "publish_date": "function(){return publish_date}",
+                "author": "function(){return authors}",
+                "dimensions": "function(){return physical_dimensions}"
+            },
+            "byProcessing": "function(){return [ISBN.parse(by[0]).asIsbn10()];}",
+            "query": "{\"isbn_10\" : [ \"{{BY0}}\"]}",
+            "outputProcessing": "function(){return $output}"
         }
     ],
     "byAuthor": [
@@ -81,28 +99,18 @@
             },
             "query": "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dbpprop: <http://dbpedia.org/property/>\nPREFIX ontology: <http://dbpedia.org/ontology/>\nselect ?s_isbn ?s_title ?s_synopsis ?s_language ?s_genre ?s_country ?s_author\nwhere {\n?book rdf:type ontology:Book.\n?book dbpprop:isbn ?s_isbn. FILTER( langMatches( lang( ?s_isbn ), \"en\" ) ).\n?book dbpprop:genre ?_genre. OPTIONAL{?_genre rdfs:label ?s_genre. FILTER( langMatches( lang( ?s_genre ), \"en\" ) )}.\n?book dbpprop:name ?s_title. FILTER( langMatches( lang( ?s_title ), \"en\" ) ).\nOPTIONAL{?book ontology:abstract ?s_synopsis. FILTER( langMatches( lang( ?s_synopsis ), \"en\" ) )}.\n?book dbpprop:language ?_language. OPTIONAL{?_language  dbpprop:iso ?s_language. FILTER( langMatches( lang( ?s_language ), \"en\" ) )}.\n?book dbpprop:country ?_country. OPTIONAL{?_country dbpprop:countryCode ?s_country. FILTER( langMatches( lang( ?s_country ), \"en\" ) )}.\n?book dbpprop:author ?_author. ?_author dbpprop:name ?s_author. FILTER regex( ?s_author, \"{{BY0}}\", \"i\"). FILTER( langMatches( lang( ?s_author ), \"en\" ) ).\n}LIMIT 200",
             "outputProcessing": "function(){var result = [];var selected = {};for(var i=0;i<$output.length;i++){if(selected[$output[i].isbn] === undefined){result.push($output[i]);selected[$output[i].isbn] = true;}}return result}"
-        },
-        {
-            "source": "mongodb",
-            "output": ["subtitle"],
-            "mapping": {
-                "subtitle": "function(){return subtitle}"
-            },
-            "byProcessing": "function(){return [ISBN.parse(by[0]).asIsbn10()];}",
-            "query": "{\"authors\" : [ { \"key\" : {{BY0}} }]}",
-            "outputProcessing": "function(){for(var i=0;i<$output.length;i++){if($output[i].language.length == 2){return [$output[i]]}} return [$output[0]]}"
         }
     ],
-    "byAuthor2": [
+    "getAuthor": [
         {
             "source": "mongodb",
-            "output": ["subtitle"],
+            "output": ["name"],
             "mapping": {
-                "subtitle": "function(){return subtitle}"
+                "name": "function(){return name}"
             },
-            "byProcessing": "function(){return by}",
-            "query": "{\"authors\" : [ { \"key\" : \"{{BY0}}\" }]}",
-            "outputProcessing": "function(){for(var i=0;i<$output.length;i++){if($output[i].language.length == 2){return [$output[i]]}} return [$output[0]]}"
+            "byProcessing": "function(){return by;}",
+            "query": "{\"id\" : {{BY0}} }",
+            "outputProcessing": "function(){return $output}"
         }
     ],
     "byGenre": [
@@ -203,8 +211,26 @@
                 "country": "function(){return s_country}",
                 "author": "function(){return s_author}"
             },
-            "query": "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dbpprop: <http://dbpedia.org/property/>\nPREFIX ontology: <http://dbpedia.org/ontology/>\nselect ?s_isbn ?s_title ?s_synopsis ?s_language ?s_genre ?s_country ?s_author\nwhere {\n ?book rdf:type ontology:Book.\n ?book dbpprop:isbn ?s_isbn. FILTER( langMatches( lang( ?s_isbn ), \"en\" ) ).\n ?book dbpprop:genre ?_genre. OPTIONAL{?_genre rdfs:label ?s_genre. FILTER( langMatches( lang( ?s_genre ), \"en\" ) )}.\n ?book dbpprop:name ?s_title. FILTER( langMatches( lang( ?s_title ), \"en\" ) ).\n OPTIONAL{?book ontology:abstract ?s_synopsis. FILTER( langMatches( lang( ?s_synopsis ), \"en\" ) )}.\n ?book dbpprop:language ?_language. OPTIONAL{?_language  dbpprop:iso ?s_language. FILTER( langMatches( lang( ?s_language ), \"en\" ) )}.\n ?book dbpprop:country ?_country. OPTIONAL{?_country dbpprop:countryCode ?s_country. FILTER( langMatches( lang( ?s_country ), \"en\" ) )}.\n ?book dbpprop:author ?_author. ?_author dbpprop:name ?s_author. FILTER( langMatches( lang( ?s_author ), \"en\" ) ).\n}LIMIT 1000",
+            "query": "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX dbpprop: <http://dbpedia.org/property/>\nPREFIX ontology: <http://dbpedia.org/ontology/>\nselect ?s_isbn ?s_title ?s_synopsis ?s_language ?s_genre ?s_country ?s_author\nwhere {\n ?book rdf:type ontology:Book.\n ?book dbpprop:isbn ?s_isbn. FILTER( langMatches( lang( ?s_isbn ), \"en\" ) ).\n ?book dbpprop:genre ?_genre. OPTIONAL{?_genre rdfs:label ?s_genre. FILTER( langMatches( lang( ?s_genre ), \"en\" ) )}.\n ?book dbpprop:name ?s_title. FILTER( langMatches( lang( ?s_title ), \"en\" ) ).\n OPTIONAL{?book ontology:abstract ?s_synopsis. FILTER( langMatches( lang( ?s_synopsis ), \"en\" ) )}.\n ?book dbpprop:language ?_language. OPTIONAL{?_language  dbpprop:iso ?s_language. FILTER( langMatches( lang( ?s_language ), \"en\" ) )}.\n ?book dbpprop:country ?_country. OPTIONAL{?_country dbpprop:countryCode ?s_country. FILTER( langMatches( lang( ?s_country ), \"en\" ) )}.\n ?book dbpprop:author ?_author. ?_author dbpprop:name ?s_author. FILTER( langMatches( lang( ?s_author ), \"en\" ) ).\n}LIMIT 100",
             "outputProcessing": "function(){var result = [];var selected = {};\nfor(var i=0;i<20;i++){var position = Math.round(Math.random()*$output.length)%$output.length;for(var j=0;j<$output.length;j++){if(selected[$output[(position+j)%$output.length].isbn] === undefined){result.push($output[(position+j)%$output.length]);selected[$output[(position+j)%$output.length].isbn] = true;break;}}}return result;}"
+        },
+        {
+            "source": "mongodb",
+            "output": ["isbn_10","title","publishers","subtitle","number_of_pages","languages","publish_date","authors","physical_dimensions"],
+            "mapping": {
+                "isbn": "function(){if (isbn_10 != null) return isbn_10[0]; else return 'Unknown';}",
+                "title": "function(){return title}",
+                "publishers": "function(){if (publishers != null) return publishers[0]; else return 'Unknown';}",
+                "synopsis": "function(){return subtitle}",
+                "pages": "function(){return number_of_pages}",
+                "language": "function(){if (languages != null) return languages[0]; else return 'Unknown';}",
+                "publish_date": "function(){return publish_date}",
+                "author": "function(){return authors}",
+                "dimensions": "function(){return physical_dimensions}"
+            },
+            "byProcessing": "function(){return by;}",
+            "query": "{\"number_of_pages\" : 183}",
+            "outputProcessing": "function(){return $output}"
         }
     ]
 }

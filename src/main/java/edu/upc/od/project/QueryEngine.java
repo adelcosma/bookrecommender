@@ -1,8 +1,8 @@
 package edu.upc.od.project;
 
+import edu.upc.od.project.metadata.Metadata;
 import edu.upc.od.project.metadata.QueryMD;
 import edu.upc.od.project.metadata.SourceMD;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
@@ -10,6 +10,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,8 +54,8 @@ public abstract class QueryEngine {
     ArrayList<String> processBy(String byProcessStr, ArrayList<String> by) throws IOException, ScriptException {
         String byStr = mapper.writeValueAsString(by);
         engine = engFactory.getEngineByName("JavaScript");
-        engine.eval(new java.io.FileReader("isbn-groups.js"));
-        engine.eval(new java.io.FileReader("isbn.js"));
+        engine.eval(new java.io.FileReader(Metadata.METADATA_REPO + "isbn-groups.js"));
+        engine.eval(new java.io.FileReader(Metadata.METADATA_REPO + "isbn.js"));
         engine.eval("var by="+byStr+";"+"var $byProcessing="+byProcessStr+";$result=$byProcessing()");
         return (ArrayList<String>) mapper.readValue(mapper.writeValueAsString(engine.get("$result")), new TypeReference<ArrayList<String>>() {
         });
@@ -75,9 +76,11 @@ public abstract class QueryEngine {
                 engine = engFactory.getEngineByName("JavaScript");
                 engine.eval(new java.io.FileReader("isbn-groups.js"));
                 engine.eval(new java.io.FileReader("isbn.js"));
-                String js = vars+"var $mapping="+ merge.getValue()+";$result=$mapping()";
+                String js = vars+"var $mapping="+ merge.getValue()+";$result=$mapping();";
                 engine.eval(js);
-                result.put(merge.getKey(), (String) engine.get("$result"));
+                if (engine.get("$result") != null) {
+                    result.put(merge.getKey(), (engine.get("$result")).toString());
+                }
             }
             results.add(result);
         }

@@ -14,17 +14,18 @@ import java.util.HashMap;
  */
 public class Metadata {
     private ObjectMapper mapper;
+    public static final String METADATA_REPO = "C:\\Users\\Adriana\\Documents\\GitHub\\bookrecommender\\";
     public Metadata(){
         this.mapper = new ObjectMapper();
 
     }
     public HashMap<String, ArrayList< QueryMD>> getQueriesMD() throws IOException {
-        return mapper.readValue(new File("queries_metadata.json"), new TypeReference<HashMap<String, ArrayList< QueryMD>>>(){});
+        return mapper.readValue(new File(METADATA_REPO + "queries_metadata.json"), new TypeReference<HashMap<String, ArrayList< QueryMD>>>(){});
     }
     public HashMap<String, SourceMD> getSourcesMD() throws IOException {
-        return mapper.readValue(new File("sources_metadata.json"), new TypeReference<HashMap<String, SourceMD>>(){});
+        return mapper.readValue(new File(METADATA_REPO + "sources_metadata.json"), new TypeReference<HashMap<String, SourceMD>>(){});
     }
     public IntegrationMD getIntegrationMD() throws IOException {
-        return mapper.readValue(new File("integration_metadata.json"), IntegrationMD.class);
+        return mapper.readValue(new File(METADATA_REPO + "integration_metadata.json"), IntegrationMD.class);
     }
 }

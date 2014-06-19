@@ -2,12 +2,16 @@
     "index": "isbn",
     "byIndexQuery": "byISBN",
     "mapping": {
-        "title": "function(){return $query.dbpedia.title}",
-        "isbn": "function(){return $query.dbpedia.isbn}",
-        "synopsis": "function(){return $query.dbpedia.synopsis}",
-        "language": "function(){return $query.dbpedia.language}",
-        "genre": "function(){return $query.dbpedia.genre}",
-        "country": "function(){return $query.dbpedia.country}",
-        "author": "function(){return $query.dbpedia.author}"
+        "title": "function(){$result = ($query.dbpedia !== undefined) ? $query.dbpedia.title : ($query.mongodb !== undefined) ? $query.mongodb.title : 'Unknown'; if ($result === undefined) $result = 'Unknown'; return $result;}",
+        "isbn": "function(){$result = ($query.dbpedia !== undefined) ? $query.dbpedia.isbn : ($query.mongodb !== undefined) ? $query.mongodb.isbn : 'Unknown'; if ($result === undefined) $result = 'Unknown'; return $result;}",
+        "synopsis": "function(){$result = ($query.dbpedia !== undefined) ? $query.dbpedia.synopsis : ($query.mongodb !== undefined) ? $query.mongodb.synopsis : 'Unknown'; if ($result === undefined) $result = 'Unknown'; return $result;}",
+        "language": "function(){$result = ($query.dbpedia !== undefined) ? $query.dbpedia.language : ($query.mongodb !== undefined) ? $query.mongodb.language : 'Unknown'; if ($result === undefined) $result = 'Unknown'; return $result;}",
+        "genre": "function(){$result = ($query.dbpedia !== undefined) ? $query.dbpedia.genre : 'Unknown'; if ($result === undefined) $result = 'Literature'; return $result;}",
+        "country": "function(){$result = ($query.dbpedia !== undefined) ? $query.dbpedia.country : 'Unknown'; if ($result === undefined) $result = 'Unknown'; return $result;}",
+        "author": "function(){return $result = ($query.dbpedia !== undefined) ? $query.dbpedia.author : 'Unknown'; if ($result === undefined) $result = 'Unknown'; return $result;}",
+        "pages": "function(){$result = ($query.mongodb !== undefined) ? $query.mongodb.pages : 'Unknown'; if ($result === undefined) $result = 'Unknown'; return $result;}",
+        "publish_date": "function(){$result = ($query.mongodb !== undefined) ? $query.mongodb.publish_date : 'Unknown'; if ($result === undefined) $result = 'Unknown'; return $result;}",
+        "dimensions": "function(){$result = ($query.mongodb !== undefined) ? $query.mongodb.dimensions : 'Unknown'; if ($result === undefined) $result = 'Unknown'; return $result;}",
+        "publishers": "function(){$result = ($query.mongodb !== undefined) ? $query.mongodb.publishers : 'Unknown'; if ($result === undefined) $result = 'Unknown'; return $result;}"
     }
 }

@@ -38,11 +38,12 @@ public class Integration {
     public ArrayList<Map<String, String>> performQuery(String queryId, ArrayList<String> by) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException, ScriptException {
 
         ArrayList<QueryMD> query = queriesMD.get(queryId);
-
+        ArrayList<Map<String, String>> a = new ArrayList<Map<String, String>>();
         // index_value -> source -> book
         Map<String, Map<String, Map<String, String>>> indexedPartialResults = new HashMap<String, Map<String, Map<String,String>>>();
 
         for(QueryMD sourceQuery: query){
+            
             SourceMD source = sourcesMD.get(sourceQuery.getSource());
             QueryEngine qe = (QueryEngine) Class.forName(source.getIface()).newInstance();
             for(Map<String, String> partialResult: qe.performQuery(sourceQuery, source, by)){
@@ -58,9 +59,14 @@ public class Integration {
                 if(indexedPartialResults.get(indexValue) == null){
                     indexedPartialResults.put(indexValue, new HashMap<String, Map<String, String>>());
                 }
-
+                if (partialResult.containsKey("name")) {
+                    a.add(partialResult);
+                }
                 indexedPartialResults.get(indexValue).put(sourceQuery.getSource(), partialResult);
             }
+        }
+        if (a.size() > 0) {
+            return a;
         }
         // [source -> book, ...]
         return integrate(indexedPartialResults);
